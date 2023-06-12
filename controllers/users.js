@@ -13,11 +13,15 @@ const getUsers = (req, res) => {
 const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
+      if (user === null) {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(400).send({ message: 'Некорректные данные' });
         return;
       }
       res.status(500).send({ message: err.message });
@@ -38,10 +42,10 @@ const createUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  const { nameUser, aboutUser } = req.body;
+  const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, {
-    name: nameUser,
-    about: aboutUser,
+    name,
+    about,
   }, {
     new: true,
     runValidators: true,
