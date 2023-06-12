@@ -13,13 +13,13 @@ const getUsers = (req, res) => {
 const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (user === null) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
       res.send({ data: user });
     })
     .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
       res.status(500).send({ message: err.message });
     });
 };
@@ -42,12 +42,12 @@ const updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: nameUser,
     about: aboutUser,
+  }, {
+    new: true,
+    runValidators: true,
+    upsert: true,
   })
     .then((user) => {
-      if (user === null) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
-      }
       res.send({ data: user });
     })
     .catch((err) => {
@@ -63,6 +63,10 @@ const updateAvatar = (req, res) => {
   const { avatarUser } = req.body;
   User.findByIdAndUpdate(req.user._id, {
     avatar: avatarUser,
+  }, {
+    new: true,
+    runValidators: true,
+    upsert: true,
   })
     .then((user) => {
       if (user === null) {
