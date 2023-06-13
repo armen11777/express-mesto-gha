@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const { BadRequest, NotFound, ServerError } = require('../utils/constants');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -6,7 +7,7 @@ const getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      res.status(ServerError).send({ message: err.message });
     });
 };
 
@@ -14,17 +15,17 @@ const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NotFound).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректные данные' });
+        res.status(BadRequest).send({ message: 'Некорректные данные' });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res.status(ServerError).send({ message: err.message });
     });
 };
 
@@ -34,10 +35,10 @@ const createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+        res.status(BadRequest).send({ message: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res.status(ServerError).send({ message: err.message });
     });
 };
 
@@ -49,17 +50,20 @@ const updateUser = (req, res) => {
   }, {
     new: true,
     runValidators: true,
-    upsert: true,
   })
     .then((user) => {
+      if (user === null) {
+        res.status(NotFound).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+        res.status(BadRequest).send({ message: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res.status(ServerError).send({ message: err.message });
     });
 };
 
@@ -70,21 +74,20 @@ const updateAvatar = (req, res) => {
   }, {
     new: true,
     runValidators: true,
-    upsert: true,
   })
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NotFound).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(ServerError).send({ message: 'Произошла ошибка' });
     });
 };
 
