@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    minlength: [2, 'Минимальная длина поля "name" - 2'],
+    minlength: [2, 'Минимальная длина поля 2 символа'],
     maxlength: 30,
     default: 'Жак-Ив Кусто',
   },
