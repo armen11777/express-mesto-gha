@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const BadRequestError = require('../errors/BadRequestError'); // 400
+const ForbiddenError = require('../errors/ForbiddenError'); // 403
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -23,10 +24,8 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  console.log('sadlmsemlf')
   Card.findById(req.params.cardId)
     .then((card) => {
-      console.log(card)
       if (card === null) {
         next(new NotFoundError('Карточка с указанным _id не найдена'));
         return;
@@ -42,7 +41,7 @@ const deleteCard = (req, res, next) => {
             }
           });
       }
-      throw new NotFoundError('Карточка с указанным _id не найдена')
+      throw new ForbiddenError('Ошибка доступа');
     })
     .catch(next);
 };

@@ -11,7 +11,12 @@ router.post('/', celebrate({
     link: Joi.string().pattern(/^https?:\/\/(www\.)?[a-z0-9._~:/?#]+#?/).required(),
   }),
 }), createCard);
-router.delete('/:cardId', deleteCard);
+router.delete('/:cardId', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+}), deleteCard);
 router.put('/:cardId/likes', celebrate({
   // валидируем параметры
   params: Joi.object().keys({
