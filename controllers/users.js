@@ -103,7 +103,7 @@ const login = (req, res, next) => {
 };
 
 const currentUser = (req, res, next) => {
-  User.findById(req.user)
+  User.findById(req.user._id)
     .then((user) => {
       if (user === null) {
         throw new NotFoundError('Не пройдена авторизация');
