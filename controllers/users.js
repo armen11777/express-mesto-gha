@@ -34,9 +34,18 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({ name, about, avatar, email, password: hash,
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      res.send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    })
+
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с email уже зарегистрирован'));
@@ -95,7 +104,9 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
     // аутентификация успешна! пользователь в переменной user
-      res.send(jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }));
+      res.send({
+        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' })
+      });
     })
     .catch((err) => {
       next(new UnauthorizedError(err.message));
