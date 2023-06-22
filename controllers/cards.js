@@ -23,10 +23,13 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
+  console.log('sadlmsemlf')
   Card.findById(req.params.cardId)
     .then((card) => {
+      console.log(card)
       if (card === null) {
         next(new NotFoundError('Карточка с указанным _id не найдена'));
+        return;
       }
       if (card.owner === req.user._id) {
         Card.findByIdAndRemove(req.params.cardId)
@@ -39,10 +42,9 @@ const deleteCard = (req, res, next) => {
             }
           });
       }
+      throw new NotFoundError('Карточка с указанным _id не найдена')
     })
-    .catch((err) => {
-      next(new NotFoundError({ message: err.message }));
-    });
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
