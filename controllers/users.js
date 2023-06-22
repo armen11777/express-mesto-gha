@@ -34,12 +34,7 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
+    .then((hash) => User.create({ name, about, avatar, email, password: hash,
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -100,11 +95,22 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
     // аутентификация успешна! пользователь в переменной user
-      res.send({ id_: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }) });
+      res.send(jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }));
     })
     .catch((err) => {
       next(new UnauthorizedError(err.message));
     });
+};
+
+const currentUser = (req, res, next) => {
+  User.findById(req.user)
+    .then((user) => {
+      if (user === null) {
+        throw new NotFoundError('Не пройдена авторизация');
+      }
+      res.send({ data: user });
+    })
+    .catch(next);
 };
 
 module.exports = {
@@ -114,4 +120,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
+  currentUser,
 };

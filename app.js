@@ -22,7 +22,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/),
+    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?[a-z0-9._~:/?#]+#?/),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

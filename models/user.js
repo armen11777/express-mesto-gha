@@ -48,8 +48,8 @@ userSchema.statics.findUserByCredentials = function (email, password) {
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправильные почта или пароль'));
-          } // отклоняем промис
-          return user; // но переменной user нет в этой области видимости
+          }
+          return user;
         });
     });
 };
