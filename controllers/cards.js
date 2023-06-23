@@ -30,7 +30,7 @@ const deleteCard = (req, res, next) => {
         next(new NotFoundError('Карточка с указанным _id не найдена'));
         return;
       }
-      if (card.owner === req.user._id) {
+      if (card.owner.toString() === req.user._id) {
         Card.findByIdAndRemove(req.params.cardId)
           .then((cardDelete) => {
             res.send({ data: cardDelete });
@@ -40,8 +40,9 @@ const deleteCard = (req, res, next) => {
               next(new BadRequestError(err.message));
             }
           });
+      } else {
+        throw new ForbiddenError('Ошибка доступа');
       }
-      throw new ForbiddenError('Ошибка доступа');
     })
     .catch(next);
 };
