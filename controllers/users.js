@@ -4,7 +4,6 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const BadRequestError = require('../errors/BadRequestError'); // 400
 const ConflictError = require('../errors/ConflictError'); // 409
-const UnauthorizedError = require('../errors/UnauthorizedError'); // 401
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -19,13 +18,14 @@ const getUser = (req, res, next) => {
     .then((user) => {
       if (user === null) {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Некорректные данные'));
-      }
+      } else { next(err); }
     });
 };
 
@@ -45,14 +45,14 @@ const createUser = (req, res, next) => {
         email: user.email,
       });
     })
-
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с email уже зарегистрирован'));
+        return;
       }
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
@@ -68,13 +68,14 @@ const updateUser = (req, res, next) => {
     .then((user) => {
       if (user === null) {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
@@ -89,13 +90,14 @@ const updateAvatar = (req, res, next) => {
     .then((user) => {
       if (user === null) {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        return;
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
@@ -108,9 +110,7 @@ const login = (req, res, next) => {
         token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
       });
     })
-    .catch((err) => {
-      next(new UnauthorizedError(err.message));
-    });
+    .catch(next);
 };
 
 const currentUser = (req, res, next) => {

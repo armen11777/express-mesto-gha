@@ -3,12 +3,13 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
+const { reLink } = require('../utils/constants');
 
 router.get('/', getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().pattern(/^https?:\/\/(www\.)?[a-z0-9._~:/?#]+#?/).required(),
+    link: Joi.string().pattern(reLink).required(),
   }),
 }), createCard);
 router.delete('/:cardId', celebrate({

@@ -3,6 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUser, updateUser, updateAvatar, currentUser,
 } = require('../controllers/users');
+const { reLink } = require('../utils/constants');
 
 router.get('/', getUsers);
 router.get('/me', currentUser);
@@ -20,7 +21,7 @@ router.patch('/me', celebrate({
 }), updateUser);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?[a-z0-9._~:/?#]+#?/),
+    avatar: Joi.string().pattern(reLink),
   }),
 }), updateAvatar);
 

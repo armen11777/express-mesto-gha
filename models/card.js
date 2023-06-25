@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { reLink } = require('../utils/constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => /^https?:\/\/(www\.)?[a-z0-9._~:/?#]+#?/.test(v),
+      validator: (v) => reLink.test(v),
       message: (props) => `${props.value} некорректная ссылка`,
     },
   },

@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
@@ -38,7 +38,7 @@ const deleteCard = (req, res, next) => {
           .catch((err) => {
             if (err.name === 'CastError') {
               next(new BadRequestError(err.message));
-            }
+            } else { next(err); }
           });
       } else {
         throw new ForbiddenError('Ошибка доступа');
@@ -56,13 +56,14 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (card === null) {
         next(new NotFoundError('Карточка с указанным _id не найдена'));
+        return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
@@ -82,7 +83,7 @@ const dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(err.message));
-      }
+      } else { next(err); }
     });
 };
 
