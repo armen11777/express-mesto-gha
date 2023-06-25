@@ -6,6 +6,7 @@ const { NotFound } = require('./utils/constants');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { reLink } = require('./utils/constants');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 
@@ -33,8 +34,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('/*', (req, res) => {
-  res.status(NotFound).send({ message: 'Страница не найдена' });
+app.use('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
